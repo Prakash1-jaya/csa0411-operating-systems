@@ -1,0 +1,26 @@
+/* indexed_allocation.c
+   Simulate indexed allocation: index block contains pointers to file blocks. */
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+    int diskBlocks = 100;
+    int blockSize = 1; // abstract
+    int indexBlock;
+    int fileLength;
+    printf("Indexed allocation simulation (disk blocks=%d)\n", diskBlocks);
+    printf("Enter index block (0-%d) for file: ", diskBlocks-1);
+    scanf("%d",&indexBlock);
+    printf("Enter number of blocks in file: ");
+    scanf("%d",&fileLength);
+    int index[fileLength];
+    printf("Enter block numbers for file (space separated):\n");
+    for(int i=0;i<fileLength;i++){ scanf("%d",&index[i]); }
+
+    printf("To access ith block of file, go to index block %d at entry %d -> block %d\n", indexBlock, 0, index[0]);
+    printf("Example: enter record index to access (0-based): ");
+    int rec; scanf("%d",&rec);
+    if(rec<0 || rec>=fileLength){ printf("Out of range\n"); return 0; }
+    printf("Index block %d entry %d points to disk block %d\n", indexBlock, rec, index[rec]);
+    return 0;
+}

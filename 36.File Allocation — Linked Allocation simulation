@@ -1,0 +1,32 @@
+/* linked_allocation.c
+   Simulate linked allocation: each block has pointer to next. */
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+    int diskBlocks = 100;
+    int next[diskBlocks];
+    for(int i=0;i<diskBlocks;i++) next[i] = -1;
+
+    int startBlock, length;
+    printf("Linked allocation simulation\nEnter start block and file length: ");
+    scanf("%d %d",&startBlock,&length);
+    printf("Enter the sequence of blocks (space separated) starting from start block:\n");
+    int prev = -1, first = startBlock, cur;
+    for(int i=0;i<length;i++){
+        scanf("%d",&cur);
+        if(i==0 && cur!=startBlock) { printf("First entered block should equal start block.\n"); return 0; }
+        if(prev!=-1) next[prev] = cur;
+        prev = cur;
+    }
+    next[prev] = -1; // end
+
+    printf("Traverse file from start block %d: ", startBlock);
+    int p = startBlock;
+    while(p!=-1){
+        printf("%d ", p);
+        p = next[p];
+    }
+    printf("\nTo access record k you follow pointers from start %d k times.\n", startBlock);
+    return 0;
+}

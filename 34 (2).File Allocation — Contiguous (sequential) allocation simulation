@@ -1,0 +1,28 @@
+/* contiguous_allocation.c
+   Simulate a file stored contiguously. We allocate files on a simulated disk
+   array. Reading record i requires reading from start+0 to start+i. */
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int diskBlocks = 100;
+    int disk[diskBlocks];
+    for(int i=0;i<diskBlocks;i++) disk[i]=0; // 0 = free
+
+    int start, length;
+    printf("Simulate contiguous allocation.\nDisk size (blocks) = %d\n", diskBlocks);
+    printf("Enter starting block and length (blocks) of the file: ");
+    scanf("%d %d",&start,&length);
+    if(start<0 || start+length>diskBlocks){ printf("Invalid allocation.\n"); return 0; }
+    for(int i=0;i<length;i++) disk[start+i]=1; // mark allocated
+
+    printf("Enter record index to access (0-based): ");
+    int rec; scanf("%d",&rec);
+    if(rec<0 || rec>=length){ printf("Record out of range.\n"); return 0; }
+
+    printf("To access record %d you must read blocks from %d to %d (inclusive)\n", rec, start, start+rec);
+    printf("Blocks read sequence: ");
+    for(int i=start;i<=start+rec;i++) printf("%d ", i);
+    printf("\n");
+    return 0;
+}

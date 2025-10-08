@@ -1,0 +1,28 @@
+/* print_perms.c */
+#include <stdio.h>
+#include <sys/stat.h>
+
+void print_mode(mode_t m){
+    char str[11];
+    str[0] = (S_ISDIR(m)) ? 'd' : '-';
+    str[1] = (m & S_IRUSR) ? 'r' : '-';
+    str[2] = (m & S_IWUSR) ? 'w' : '-';
+    str[3] = (m & S_IXUSR) ? 'x' : '-';
+    str[4] = (m & S_IRGRP) ? 'r' : '-';
+    str[5] = (m & S_IWGRP) ? 'w' : '-';
+    str[6] = (m & S_IXGRP) ? 'x' : '-';
+    str[7] = (m & S_IROTH) ? 'r' : '-';
+    str[8] = (m & S_IWOTH) ? 'w' : '-';
+    str[9] = (m & S_IXOTH) ? 'x' : '-';
+    str[10] = '\0';
+    printf("%s\n", str);
+}
+
+int main(int argc, char *argv[]){
+    if(argc<2){ printf("Usage: %s <filename>\n", argv[0]); return 1; }
+    struct stat st;
+    if(stat(argv[1], &st) != 0){ perror("stat"); return 1; }
+    printf("Permissions for %s : ", argv[1]);
+    print_mode(st.st_mode);
+    return 0;
+}

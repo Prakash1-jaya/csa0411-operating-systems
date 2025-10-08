@@ -1,0 +1,40 @@
+/* disk_scan.c
+   SCAN scheduling. Direction: 0 = toward 0 (left), 1 = toward max (right). */
+#include <stdio.h>
+#include <stdlib.h>
+
+int cmpfunc(const void *a,const void *b){ return (*(int*)a - *(int*)b); }
+
+int main(){
+    int n, head, maxcyl, dir;
+    printf("Number of requests: "); scanf("%d",&n);
+    int req[n+2];
+    printf("Enter requests (cylinder numbers):\n");
+    for(int i=0;i<n;i++) scanf("%d",&req[i]);
+    printf("Enter initial head position: "); scanf("%d",&head);
+    printf("Enter max cylinder (e.g. 199): "); scanf("%d",&maxcyl);
+    printf("Direction (0: toward 0, 1: toward max): "); scanf("%d",&dir);
+
+    // add head as a request for sorting convenience
+    req[n]=head;
+    qsort(req, n+1, sizeof(int), cmpfunc);
+
+    int idx=0;
+    for(int i=0;i<=n;i++) if(req[i]==head) { idx=i; break; }
+
+    int total=0;
+    printf("Service order: ");
+    if(dir==1){
+        for(int i=idx;i<=n;i++) { printf("%d ", req[i]); if(i>idx) total += abs(req[i]-req[i-1]); }
+        // go to end
+        if(req[n] != maxcyl) { total += abs(maxcyl - req[n]); printf("%d ", maxcyl); }
+        // then reverse
+        for(int i=idx-1;i>=0;i--){ total += abs(req[i+1]-req[i]); printf("%d ", req[i]); }
+    } else {
+        for(int i=idx;i>=0;i--){ printf("%d ", req[i]); if(i<idx) total += abs(req[i]-req[i+1]); }
+        if(req[0] != 0) { total += abs(req[0] - 0); printf("%d ", 0); }
+        for(int i=idx+1;i<=n;i++){ total += abs(req[i]-req[i-1]); printf("%d ", req[i]); }
+    }
+    printf("\nTotal head movement = %d\n", total);
+    return 0;
+}

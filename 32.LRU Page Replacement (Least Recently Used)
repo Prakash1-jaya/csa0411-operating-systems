@@ -1,0 +1,53 @@
+/* lru_paging.c
+   Simulate LRU page replacement. */
+#include <stdio.h>
+#include <limits.h>
+
+int main(){
+    int n, frames;
+    printf("Number of pages in reference string: ");
+    scanf("%d",&n);
+    int ref[n];
+    printf("Enter reference string:\n");
+    for(int i=0;i<n;i++) scanf("%d",&ref[i]);
+    printf("Number of frames: ");
+    scanf("%d",&frames);
+
+    int frame[frames];
+    int used_time[frames]; // timestamp of last use
+    for(int i=0;i<frames;i++){ frame[i]=-1; used_time[i]=-1; }
+    int time = 0, faults = 0;
+
+    printf("\nStep-by-step (frames):\n");
+    for(int i=0;i<n;i++,time++){
+        int page = ref[i];
+        int hit_index = -1;
+        for(int j=0;j<frames;j++) if(frame[j]==page) { hit_index=j; break; }
+        if(hit_index!=-1){
+            used_time[hit_index]=time;
+            printf("Ref %2d : (hit)    ", page);
+        } else {
+            // find empty or LRU
+            int replace = -1;
+            for(int j=0;j<frames;j++) if(frame[j]==-1) { replace=j; break; }
+            if(replace==-1){
+                int lru = INT_MAX, li = 0;
+                for(int j=0;j<frames;j++){
+                    if(used_time[j] < lru){ lru = used_time[j]; li = j; }
+                }
+                replace = li;
+            }
+            frame[replace] = page;
+            used_time[replace] = time;
+            faults++;
+            printf("Ref %2d : (fault)  ", page);
+        }
+        for(int j=0;j<frames;j++) {
+            if(frame[j]==-1) printf(" - ");
+            else printf("%2d ", frame[j]);
+        }
+        printf("\n");
+    }
+    printf("\nTotal Page Faults = %d\n", faults);
+    return 0;
+}
